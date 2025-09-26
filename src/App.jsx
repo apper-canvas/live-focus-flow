@@ -1,13 +1,15 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import { ToastContainer } from "react-toastify"
-import TaskManager from "@/components/pages/TaskManager"
+import Dashboard from "@/components/pages/Dashboard"
+import Tasks from "@/components/pages/Tasks"
 
 function App() {
   return (
     <BrowserRouter>
       <div className="min-h-screen bg-background">
         <Routes>
-          <Route path="/" element={<TaskManager />} />
+<Route path="/" element={<Dashboard />} />
+          <Route path="/tasks" element={<Tasks />} />
         </Routes>
         <ToastContainer
           position="top-right"
