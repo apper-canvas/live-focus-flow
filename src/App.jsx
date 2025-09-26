@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 import { ToastContainer } from "react-toastify"
 import Dashboard from "@/components/pages/Dashboard"
 import Tasks from "@/components/pages/Tasks"
+import Projects from "@/components/pages/Projects"
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
         <Routes>
 <Route path="/" element={<Dashboard />} />
           <Route path="/tasks" element={<Tasks />} />
+          <Route path="/projects" element={<Projects />} />
         </Routes>
         <ToastContainer
           position="top-right"

@@ -110,7 +110,7 @@ const Tasks = () => {
               </div>
             </div>
 
-            <nav className="flex items-center gap-3">
+<nav className="flex items-center gap-3">
               <Button
                 variant="ghost"
                 onClick={() => navigate('/')}
@@ -126,7 +126,13 @@ const Tasks = () => {
                 <ApperIcon name="CheckSquare" className="mr-2 h-4 w-4" />
                 Tasks
               </Button>
-
+              <Button
+                variant="ghost"
+                onClick={() => navigate('/projects')}
+              >
+                <ApperIcon name="Folder" className="mr-2 h-4 w-4" />
+                Projects
+              </Button>
               <Button
                 variant="ghost"
                 size="icon"

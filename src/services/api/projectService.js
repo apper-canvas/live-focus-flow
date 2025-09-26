@@ -25,7 +25,7 @@ export const projectService = {
     return { ...project };
   },
 
-  // Create new project
+// Create new project
   async create(projectData) {
     await delay(300);
     const maxId = projects.reduce((max, p) => Math.max(max, p.Id), 0);
@@ -34,7 +34,8 @@ export const projectService = {
       Id: maxId + 1,
       name: projectData.name,
       description: projectData.description || "",
-      status: projectData.status || "planning"
+      status: projectData.status || "planning",
+      milestone: projectData.milestone || ""
     };
 
     projects.push(newProject);
