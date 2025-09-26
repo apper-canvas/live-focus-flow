@@ -1,12 +1,13 @@
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { projectService } from "@/services/api/projectService";
 import { cn } from "@/utils/cn";
 import ApperIcon from "@/components/ApperIcon";
+import PrioritySelector from "@/components/molecules/PrioritySelector";
+import SearchableSelect from "@/components/atoms/SearchableSelect";
 import Button from "@/components/atoms/Button";
 import Input from "@/components/atoms/Input";
 import Textarea from "@/components/atoms/Textarea";
-import PrioritySelector from "@/components/molecules/PrioritySelector";
-
 const TaskForm = ({ 
   isOpen = false, 
   onClose, 
@@ -14,11 +15,44 @@ const TaskForm = ({
   initialData = null,
   className 
 }) => {
-  const [formData, setFormData] = useState({
+const [formData, setFormData] = useState({
     title: initialData?.title || "",
     description: initialData?.description || "",
-    priority: initialData?.priority || "medium"
+    priority: initialData?.priority || "medium",
+    assignee: initialData?.assignee || "",
+    projectId: initialData?.projectId || ""
   });
+  const [projects, setProjects] = useState([]);
+  const [projectsLoading, setProjectsLoading] = useState(false);
+
+  // Load projects for lookup
+  useEffect(() => {
+    const loadProjects = async () => {
+      try {
+        setProjectsLoading(true);
+        const projectsData = await projectService.getAll();
+        setProjects(projectsData);
+      } catch (error) {
+        console.error("Error loading projects:", error);
+      } finally {
+        setProjectsLoading(false);
+      }
+    };
+
+    if (isOpen) {
+      loadProjects();
+    }
+  }, [isOpen]);
+
+  // Prepare project options for SearchableSelect
+  const projectOptions = [
+    { value: "", label: "No Project", icon: "Folder" },
+    ...projects.map(project => ({
+      value: project.Id,
+      label: project.name,
+      icon: "FolderOpen"
+    }))
+  ];
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -44,7 +78,7 @@ const TaskForm = ({
     setIsSubmitting(true);
     try {
       await onSubmit?.(formData);
-      setFormData({ title: "", description: "", priority: "medium" });
+setFormData({ title: "", description: "", priority: "medium", assignee: "", projectId: "" });
       setErrors({});
       onClose?.();
     } catch (error) {
@@ -123,7 +157,36 @@ const TaskForm = ({
               <PrioritySelector
                 value={formData.priority}
                 onChange={(priority) => setFormData({ ...formData, priority })}
-              />
+/>
+
+              {/* Assignee Field */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Assignee
+                </label>
+                <Input
+                  value={formData.assignee}
+                  onChange={(e) => setFormData(prev => ({ ...prev, assignee: e.target.value }))}
+                  placeholder="Enter assignee name..."
+                  className="w-full"
+                />
+              </div>
+
+              {/* Project Lookup Field */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Project
+                </label>
+                <SearchableSelect
+                  options={projectOptions}
+                  value={formData.projectId}
+                  onChange={(value) => setFormData(prev => ({ ...prev, projectId: value }))}
+                  placeholder="Select project..."
+                  searchPlaceholder="Search projects..."
+                  disabled={projectsLoading}
+                  className="w-full"
+                />
+              </div>
 
               <div className="flex gap-3 pt-4">
                 <Button

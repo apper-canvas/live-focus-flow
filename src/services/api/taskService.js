@@ -20,12 +20,14 @@ export const taskService = {
     await delay(400);
     const maxId = Math.max(...tasks.map(task => task.Id), 0);
     const maxOrder = Math.max(...tasks.map(task => task.order), 0);
-    const newTask = {
+const newTask = {
       Id: maxId + 1,
       title: taskData.title,
       description: taskData.description || "",
       priority: taskData.priority || "medium",
       completed: false,
+      assignee: taskData.assignee || "",
+      projectId: taskData.projectId || null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       order: maxOrder + 1
@@ -38,7 +40,7 @@ export const taskService = {
     await delay(250);
     const index = tasks.findIndex(task => task.Id === parseInt(id));
     if (index !== -1) {
-      tasks[index] = {
+tasks[index] = {
         ...tasks[index],
         ...updates,
         updatedAt: new Date().toISOString()

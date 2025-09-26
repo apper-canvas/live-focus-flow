@@ -156,11 +156,28 @@ const TaskCard = ({
                 />
                 {priorityConfig.label}
               </Badge>
-            </div>
+</div>
 
-            <span className="text-xs text-gray-400">
-              {formatDate(task.createdAt)}
-            </span>
+            {/* Task Metadata */}
+            <div className="flex items-center justify-between text-xs text-gray-500 mt-2">
+              <div className="flex items-center gap-3">
+                {task.assignee && (
+                  <div className="flex items-center gap-1">
+                    <ApperIcon name="User" className="h-3 w-3" />
+                    <span>{task.assignee}</span>
+                  </div>
+                )}
+                {task.projectId && (
+                  <div className="flex items-center gap-1">
+                    <ApperIcon name="FolderOpen" className="h-3 w-3" />
+                    <span>Project #{task.projectId}</span>
+                  </div>
+                )}
+              </div>
+              <span className="text-xs text-gray-400">
+                {formatDate(task.createdAt)}
+              </span>
+            </div>
           </div>
         </div>
       </div>
