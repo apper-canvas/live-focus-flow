@@ -1,9 +1,9 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/utils/cn";
+import SearchableSelect from "@/components/atoms/SearchableSelect";
 import FilterButton from "@/components/molecules/FilterButton";
 import ApperIcon from "@/components/ApperIcon";
-
 const TaskFilters = ({ 
   statusFilter = "all",
   priorityFilter = "all", 
@@ -28,45 +28,33 @@ const TaskFilters = ({
   return (
     <div className={cn("space-y-6", className)}>
       {/* Status Filters */}
-      <div>
+<div>
         <h3 className="mb-3 text-sm font-medium text-gray-700">
           Filter by Status
         </h3>
-        <div className="flex flex-wrap gap-2">
-          {statusFilters.map((filter) => (
-            <FilterButton
-              key={filter.value}
-              active={statusFilter === filter.value}
-              onClick={() => onStatusChange?.(filter.value)}
-              count={filter.count}
-              className="text-sm"
-            >
-              <ApperIcon name={filter.icon} className="mr-2 h-4 w-4" />
-              {filter.label}
-            </FilterButton>
-          ))}
-        </div>
+        <SearchableSelect
+          options={statusFilters}
+          value={statusFilter}
+          onChange={onStatusChange}
+          placeholder="Select status filter..."
+          searchPlaceholder="Search status options..."
+          className="w-full max-w-xs"
+        />
       </div>
 
       {/* Priority Filters */}
-      <div>
+<div>
         <h3 className="mb-3 text-sm font-medium text-gray-700">
           Filter by Priority
         </h3>
-        <div className="flex flex-wrap gap-2">
-          {priorityFilters.map((filter) => (
-            <FilterButton
-              key={filter.value}
-              active={priorityFilter === filter.value}
-              onClick={() => onPriorityChange?.(filter.value)}
-              count={filter.count}
-              className="text-sm"
-            >
-              <ApperIcon name={filter.icon} className="mr-2 h-4 w-4" />
-              {filter.label}
-            </FilterButton>
-          ))}
-        </div>
+        <SearchableSelect
+          options={priorityFilters}
+          value={priorityFilter}
+          onChange={onPriorityChange}
+          placeholder="Select priority filter..."
+          searchPlaceholder="Search priority options..."
+          className="w-full max-w-xs"
+        />
       </div>
 
       {/* Clear All Filters */}
