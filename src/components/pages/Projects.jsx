@@ -1,17 +1,20 @@
-import React, { useState, useCallback, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import ApperIcon from '@/components/ApperIcon'
-import Button from '@/components/atoms/Button'
-import SearchBar from '@/components/molecules/SearchBar'
-import ProjectForm from '@/components/organisms/ProjectForm'
-import ProjectCard from '@/components/organisms/ProjectCard'
-import Loading from '@/components/ui/Loading'
-import Empty from '@/components/ui/Empty'
-import Error from '@/components/ui/Error'
-import { projectService } from '@/services/api/projectService'
-import { toast } from 'react-toastify'
-
+import React, { useCallback, useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { projectService } from "@/services/api/projectService";
+import { toast } from "react-toastify";
+import ApperIcon from "@/components/ApperIcon";
+import Dashboard from "@/components/pages/Dashboard";
+import Tasks from "@/components/pages/Tasks";
+import Button from "@/components/atoms/Button";
+import ProjectCard from "@/components/organisms/ProjectCard";
+import ProjectForm from "@/components/organisms/ProjectForm";
+import SearchBar from "@/components/molecules/SearchBar";
+import Error from "@/components/ui/Error";
+import Empty from "@/components/ui/Empty";
+import Loading from "@/components/ui/Loading";
+import mockProjects from "@/services/mockData/projects.json";
+import mockTasks from "@/services/mockData/tasks.json";
 export default function Projects() {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -164,47 +167,49 @@ export default function Projects() {
 <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
         {/* Header */}
-        <header className="flex items-center justify-between mb-8">
-          {/* App Branding */}
-          <div className="flex items-center gap-2">
-            <ApperIcon name="BarChart3" className="h-6 w-6 text-primary" />
-            <h1 className="text-xl font-semibold text-gray-900">Focus Flow</h1>
+<header className="sticky top-0 z-40 border-b border-gray-200 bg-white/80 backdrop-blur-lg">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="flex h-16 items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="rounded-lg bg-gradient-to-br from-primary to-secondary p-2">
+                  <ApperIcon name="Target" className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold text-gray-900">Focus Flow</h1>
+                  <p className="text-xs text-gray-500">Project Management</p>
+                </div>
+              </div>
+
+              <nav className="flex items-center gap-3">
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate('/')}
+                >
+                  <ApperIcon name="BarChart3" className="mr-2 h-4 w-4" />
+                  Dashboard
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate('/tasks')}
+                >
+                  <ApperIcon name="CheckSquare" className="mr-2 h-4 w-4" />
+                  Tasks
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate('/projects')}
+                  className="text-primary font-medium"
+                >
+                  <ApperIcon name="Folder" className="mr-2 h-4 w-4" />
+                  Projects
+                </Button>
+              </nav>
+            </div>
           </div>
-          
-          {/* Page Title */}
-          <div className="flex items-center gap-2">
-            <ApperIcon name="Folder" className="h-5 w-5 text-primary" />
-            <span className="text-lg font-medium text-gray-800">Projects</span>
-          </div>
-          
-          {/* Navigation */}
-          <nav className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              onClick={() => navigate('/')}
-              className="text-sm"
-            >
-              <ApperIcon name="BarChart3" className="mr-2 h-4 w-4" />
-              Dashboard
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => navigate('/tasks')}
-              className="text-sm"
-            >
-              <ApperIcon name="CheckSquare" className="mr-2 h-4 w-4" />
-              Tasks
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => navigate('/projects')}
-              className="text-primary font-medium text-sm"
-            >
-              <ApperIcon name="Folder" className="mr-2 h-4 w-4" />
-              Projects
-            </Button>
-          </nav>
         </header>
+
+{/* Main Content Container */}
+        <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 
         {/* Controls */}
         <motion.div 
