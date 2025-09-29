@@ -12,9 +12,14 @@ export const projectService = {
   // Get all projects
 async getAll() {
     await delay(200);
-    const currentUser = getCurrentUser();
-    // Filter projects to only return those assigned to current user
-    const userProjects = projects.filter(project => project.assignee === currentUser);
+    const { user, isOwner } = getCurrentUser();
+    
+    // If owner, return all projects; otherwise filter by assignee
+    if (isOwner) {
+      return [...projects];
+    }
+    
+    const userProjects = projects.filter(project => project.assignee === user);
     return [...userProjects];
   },
 
@@ -26,13 +31,13 @@ async getById(id) {
     
     if (!project) {
       throw new Error(`Project with ID ${id} not found`);
-    }
+}
     
-    // Check if user has access to this project
-    if (project.assignee !== currentUser) {
+    // Check if user has access to this project (skip check for owner)
+    const { user, isOwner } = getCurrentUser();
+    if (!isOwner && project.assignee !== user) {
       throw new Error(`Access denied: You don't have permission to view this project`);
     }
-    
     return { ...project };
   },
 
@@ -65,8 +70,9 @@ async update(id, updates) {
       throw new Error(`Project with ID ${id} not found`);
     }
 
-    // Check if user has access to this project
-    if (projects[index].assignee !== currentUser) {
+// Check if user has access to this project (skip check for owner)
+    const { user, isOwner } = getCurrentUser();
+    if (!isOwner && projects[index].assignee !== user) {
       throw new Error(`Access denied: You don't have permission to modify this project`);
     }
 
@@ -87,8 +93,9 @@ async delete(id) {
       throw new Error(`Project with ID ${id} not found`);
     }
 
-    // Check if user has access to this project
-    if (projects[index].assignee !== currentUser) {
+// Check if user has access to this project (skip check for owner)
+    const { user, isOwner } = getCurrentUser();
+    if (!isOwner && projects[index].assignee !== user) {
       throw new Error(`Access denied: You don't have permission to delete this project`);
     }
 
@@ -100,6 +107,9 @@ async delete(id) {
 // Helper function to get current user
 function getCurrentUser() {
   // In a real application, this would come from authentication context
-  // For now, we'll use an environment variable or default to a test user
-  return import.meta?.env?.VITE_CURRENT_USER || 'current-user';
+  const user = import.meta?.env?.VITE_CURRENT_USER || 'current-user';
+  const appOwner = import.meta?.env?.VITE_APP_OWNER;
+  const isOwner = appOwner && user === appOwner;
+  
+  return { user, isOwner };
 }
