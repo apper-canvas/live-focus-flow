@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import ApperIcon from "@/components/ApperIcon";
-import Button from "@/components/atoms/Button";
-import Input from "@/components/atoms/Input";
-import Textarea from "@/components/atoms/Textarea";
+import React, { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import ApperIcon from '@/components/ApperIcon'
+import Button from '@/components/atoms/Button'
+import Input from '@/components/atoms/Input'
+import Textarea from '@/components/atoms/Textarea'
 
 const PROJECT_STATUSES = [
   { value: 'planning', label: 'Planning', icon: 'Calendar' },
@@ -17,21 +17,9 @@ export default function ProjectForm({ project, onSubmit, onClose }) {
     description: '',
     status: 'planning',
     milestone: ''
-})
+  })
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState({})
-
-  // Handle escape key to close modal
-  useEffect(() => {
-    const handleEscapeKey = (event) => {
-      if (event.key === 'Escape') {
-        onClose()
-      }
-    }
-    
-    document.addEventListener('keydown', handleEscapeKey)
-    return () => document.removeEventListener('keydown', handleEscapeKey)
-  }, [onClose])
 
   // Populate form when editing
   useEffect(() => {
@@ -44,6 +32,7 @@ export default function ProjectForm({ project, onSubmit, onClose }) {
       })
     }
   }, [project])
+
   // Handle input changes
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -115,15 +104,14 @@ export default function ProjectForm({ project, onSubmit, onClose }) {
         className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
         onClick={handleBackdropClick}
       >
-<motion.div
+        <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="glass rounded-2xl w-full max-w-md shadow-2xl max-h-[90vh] flex flex-col"
+          className="glass rounded-2xl p-6 w-full max-w-md shadow-2xl"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="p-6 overflow-y-auto">
-            {/* Header */}
+          {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <div className="gradient-primary p-2 rounded-lg">
@@ -269,9 +257,8 @@ export default function ProjectForm({ project, onSubmit, onClose }) {
                   </>
                 )}
               </Button>
-</div>
+            </div>
           </form>
-          </div>
         </motion.div>
       </motion.div>
     </AnimatePresence>

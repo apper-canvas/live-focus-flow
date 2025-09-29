@@ -1,57 +1,24 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { taskService } from "@/services/api/taskService";
-import { projectService } from "@/services/api/projectService";
-import { toast } from "react-toastify";
 import ApperIcon from "@/components/ApperIcon";
-import Projects from "@/components/pages/Projects";
-import Tasks from "@/components/pages/Tasks";
 import Button from "@/components/atoms/Button";
 import ProgressSummary from "@/components/organisms/ProgressSummary";
-import ProjectForm from "@/components/organisms/ProjectForm";
-import TaskForm from "@/components/organisms/TaskForm";
+import { taskService } from "@/services/api/taskService";
+import { toast } from "react-toastify";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const [showTaskForm, setShowTaskForm] = useState(false);
-const [showProjectForm, setShowProjectForm] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const handleCreateTask = () => {
-    setShowTaskForm(true);
-  };
-
-  const handleCreateProject = () => {
-    setShowProjectForm(true);
-  };
-
-
-  const handleTaskSubmit = async (taskData) => {
-    try {
-      await taskService.create(taskData);
-      toast.success('Task created successfully!');
-      setShowTaskForm(false);
-      setRefreshTrigger(prev => prev + 1);
-    } catch (error) {
-      toast.error('Failed to create task. Please try again.');
-    }
-  };
-
-  const handleProjectSubmit = async (projectData) => {
-    try {
-      await projectService.create(projectData);
-      toast.success('Project created successfully!');
-      setShowProjectForm(false);
-      setRefreshTrigger(prev => prev + 1);
-    } catch (error) {
-      toast.error('Failed to create project. Please try again.');
-    }
+    navigate('/tasks?action=create');
   };
 
   const handleViewTasks = () => {
     navigate('/tasks');
   };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation Header */}
@@ -76,8 +43,8 @@ const [showProjectForm, setShowProjectForm] = useState(false);
               >
                 <ApperIcon name="BarChart3" className="mr-2 h-4 w-4" />
                 Dashboard
-</Button>
-              <Button
+              </Button>
+<Button
                 variant="ghost"
                 onClick={() => navigate('/tasks')}
               >
@@ -130,22 +97,53 @@ const [showProjectForm, setShowProjectForm] = useState(false);
             <ProgressSummary refreshTrigger={refreshTrigger} />
           </motion.div>
 
+          {/* Quick Actions */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="max-w-4xl mx-auto"
+          >
+            <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-white to-gray-50 p-6 shadow-lg">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Quick Actions
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Button
+                  onClick={handleCreateTask}
+                  className="h-16 gradient-primary justify-start text-left"
+                >
+                  <div className="flex items-center">
+                    <div className="rounded-lg bg-white/20 p-2 mr-4">
+                      <ApperIcon name="Plus" className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <div className="font-semibold">Create New Task</div>
+                      <div className="text-sm opacity-80">Add a task to your list</div>
+                    </div>
+                  </div>
+                </Button>
+                
+                <Button
+                  onClick={handleViewTasks}
+                  variant="outline"
+                  className="h-16 justify-start text-left border-gray-200 hover:border-primary hover:bg-primary/5"
+                >
+                  <div className="flex items-center">
+                    <div className="rounded-lg bg-primary/10 p-2 mr-4">
+                      <ApperIcon name="List" className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-gray-900">Manage Tasks</div>
+                      <div className="text-sm text-gray-500">View and edit your tasks</div>
+                    </div>
+                  </div>
+                </Button>
+              </div>
+            </div>
+          </motion.div>
         </div>
-</main>
-
-      {/* Task Creation Modal */}
-      <TaskForm
-        isOpen={showTaskForm}
-        onClose={() => setShowTaskForm(false)}
-        onSubmit={handleTaskSubmit}
-      />
-
-{/* Project Creation Modal */}
-      <ProjectForm
-        isOpen={showProjectForm}
-        onClose={() => setShowProjectForm(false)}
-        onSubmit={handleProjectSubmit}
-      />
+      </main>
     </div>
   );
 };
