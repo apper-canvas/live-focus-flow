@@ -44,14 +44,20 @@ const Dashboard = () => {
                 <ApperIcon name="BarChart3" className="mr-2 h-4 w-4" />
                 Dashboard
               </Button>
-              <Button
+<Button
                 variant="ghost"
                 onClick={() => navigate('/tasks')}
               >
                 <ApperIcon name="CheckSquare" className="mr-2 h-4 w-4" />
                 Tasks
               </Button>
-              
+              <Button
+                variant="ghost"
+                onClick={() => navigate('/projects')}
+              >
+                <ApperIcon name="Folder" className="mr-2 h-4 w-4" />
+                Projects
+              </Button>
               <Button
                 onClick={handleCreateTask}
                 className="gradient-primary"
