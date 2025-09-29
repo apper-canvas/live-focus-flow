@@ -164,48 +164,30 @@ export default function Projects() {
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
         {/* Header */}
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="glass rounded-2xl p-6 mb-8"
-        >
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="gradient-primary p-3 rounded-xl shadow-lg">
-                <ApperIcon name="Folder" className="h-8 w-8 text-white" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
-                <p className="text-gray-600 mt-1">Manage your projects and milestones</p>
-              </div>
-            </div>
-
-            <nav className="flex items-center gap-3">
-              <Button
-                variant="ghost"
-                onClick={() => navigate('/')}
-              >
-                <ApperIcon name="BarChart3" className="mr-2 h-4 w-4" />
-                Dashboard
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => navigate('/tasks')}
-              >
-                <ApperIcon name="CheckSquare" className="mr-2 h-4 w-4" />
-                Tasks
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => navigate('/projects')}
-                className="text-primary font-medium"
-              >
-                <ApperIcon name="Folder" className="mr-2 h-4 w-4" />
-                Projects
-              </Button>
-            </nav>
-          </div>
-        </motion.div>
+<nav className="flex items-center justify-center gap-3 mb-8">
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/')}
+          >
+            <ApperIcon name="BarChart3" className="mr-2 h-4 w-4" />
+            Dashboard
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/tasks')}
+          >
+            <ApperIcon name="CheckSquare" className="mr-2 h-4 w-4" />
+            Tasks
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/projects')}
+            className="text-primary font-medium"
+          >
+            <ApperIcon name="Folder" className="mr-2 h-4 w-4" />
+            Projects
+          </Button>
+        </nav>
 
         {/* Controls */}
         <motion.div 
