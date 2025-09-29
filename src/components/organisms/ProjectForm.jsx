@@ -12,23 +12,25 @@ const PROJECT_STATUSES = [
 ]
 
 export default function ProjectForm({ project, onSubmit, onClose }) {
-  const [formData, setFormData] = useState({
+const [formData, setFormData] = useState({
     name: '',
     description: '',
     status: 'planning',
-    milestone: ''
+    milestone: '',
+    assignee: ''
   })
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState({})
 
   // Populate form when editing
-  useEffect(() => {
+useEffect(() => {
     if (project) {
       setFormData({
         name: project.name || '',
         description: project.description || '',
         status: project.status || 'planning',
-        milestone: project.milestone || ''
+        milestone: project.milestone || '',
+        assignee: project.assignee || ''
       })
     }
   }, [project])
@@ -42,7 +44,7 @@ export default function ProjectForm({ project, onSubmit, onClose }) {
   }
 
   // Form validation
-  const validateForm = () => {
+const validateForm = () => {
     const newErrors = {}
 
     if (!formData.name.trim()) {
@@ -61,6 +63,12 @@ export default function ProjectForm({ project, onSubmit, onClose }) {
       newErrors.milestone = 'Milestone must be less than 200 characters'
     }
 
+    if (formData.assignee.trim().length > 0 && formData.assignee.trim().length < 3) {
+      newErrors.assignee = 'Assignee name must be at least 3 characters'
+    } else if (formData.assignee.trim().length > 50) {
+      newErrors.assignee = 'Assignee name must be less than 50 characters'
+    }
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -76,10 +84,11 @@ export default function ProjectForm({ project, onSubmit, onClose }) {
     setLoading(true)
     try {
       await onSubmit({
-        ...formData,
+...formData,
         name: formData.name.trim(),
         description: formData.description.trim(),
-        milestone: formData.milestone.trim()
+        milestone: formData.milestone.trim(),
+        assignee: formData.assignee.trim()
       })
     } catch (error) {
       // Error handling is done in parent component
@@ -184,7 +193,7 @@ export default function ProjectForm({ project, onSubmit, onClose }) {
                                     {formData.description.length}/500 characters
                                                   </p>
                             </div>
-                            {/* Milestone */}
+{/* Milestone */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">Current Milestone
                                                   </label>
@@ -198,6 +207,21 @@ export default function ProjectForm({ project, onSubmit, onClose }) {
                                 <p className="text-xs text-gray-500 mt-1">
                                     {formData.milestone.length}/200 characters
                                                   </p>
+                            </div>
+
+                            {/* Assignee */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Project Assignee</label>
+                                <Input
+                                    value={formData.assignee}
+                                    onChange={e => handleChange("assignee", e.target.value)}
+                                    placeholder="Who's responsible for this project?"
+                                    className={errors.assignee ? "border-red-300 focus:border-red-500" : ""}
+                                    maxLength={50} />
+                                {errors.assignee && <p className="text-red-600 text-sm mt-1">{errors.assignee}</p>}
+                                <p className="text-xs text-gray-500 mt-1">
+                                    {formData.assignee.length}/50 characters
+                                </p>
                             </div>
                             {/* Status */}
                             <div>

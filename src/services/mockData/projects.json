@@ -4,34 +4,39 @@
     "name": "Website Redesign",
     "description": "Complete overhaul of company website",
     "status": "active",
-    "milestone": "Design mockups completed, starting development phase"
+    "milestone": "Design mockups completed, starting development phase",
+    "assignee": "Sarah Chen"
   },
   {
     "Id": 2,
     "name": "Mobile App Development",
     "description": "Native mobile application for iOS and Android",
     "status": "active",
-    "milestone": "Core features implemented, testing user authentication"
+    "milestone": "Core features implemented, testing user authentication",
+    "assignee": "Marcus Rodriguez"
   },
   {
     "Id": 3,
     "name": "Database Migration",
     "description": "Migrate legacy database to new infrastructure",
     "status": "active",
-    "milestone": "50% of data migrated, optimizing query performance"
+    "milestone": "50% of data migrated, optimizing query performance",
+    "assignee": "Alex Kim"
   },
   {
     "Id": 4,
     "name": "Marketing Campaign Q4",
     "description": "Quarterly marketing initiatives and campaigns",
     "status": "planning",
-    "milestone": "Target audience research completed"
+    "milestone": "Target audience research completed",
+    "assignee": "Emma Thompson"
   },
   {
     "Id": 5,
     "name": "Security Audit",
     "description": "Comprehensive security review and updates",
     "status": "completed",
-    "milestone": "All vulnerabilities addressed, security report delivered"
+    "milestone": "All vulnerabilities addressed, security report delivered",
+    "assignee": "David Park"
   }
 ]

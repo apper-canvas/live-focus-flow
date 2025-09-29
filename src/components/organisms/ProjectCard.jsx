@@ -91,6 +91,13 @@ export default function ProjectCard({ project, onEdit, onDelete }) {
           </p>
         </div>
       )}
+{/* Assignee */}
+      {project.assignee && (
+        <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
+          <ApperIcon name="User" className="h-4 w-4" />
+          <span>Assigned to: <span className="font-medium">{project.assignee}</span></span>
+        </div>
+      )}
 
       {/* Footer */}
       <div className="flex items-center justify-between pt-4 border-t border-gray-100">
