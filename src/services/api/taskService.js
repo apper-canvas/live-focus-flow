@@ -51,9 +51,8 @@ export const taskService = {
     }
   },
 
-  async getById(id) {
+async getById(id) {
     try {
-      const { ApperClient } = window.ApperSDK;
 // Check authentication before database operations
       const store = await import('@/store/index.js');
       const state = store.default.getState();
@@ -253,9 +252,8 @@ export const taskService = {
     }
   },
 
-  async delete(id) {
+async delete(id) {
     try {
-      const { ApperClient } = window.ApperSDK;
 // Check authentication before database operations
       const store = await import('@/store/index.js');
       const state = store.default.getState();
