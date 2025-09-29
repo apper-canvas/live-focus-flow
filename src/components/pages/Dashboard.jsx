@@ -16,7 +16,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
 const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [showTaskForm, setShowTaskForm] = useState(false);
-  const [showProjectForm, setShowProjectForm] = useState(false);
+const [showProjectForm, setShowProjectForm] = useState(false);
 
   const handleCreateTask = () => {
     setShowTaskForm(true);
