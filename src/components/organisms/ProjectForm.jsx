@@ -18,7 +18,7 @@ const PROJECT_STATUSES = [
 
 export default function ProjectForm({ project, onSubmit, onClose }) {
 const [formData, setFormData] = useState({
-    name: '',
+name: '',
     description: '',
     status: 'planning',
     milestone: '',
@@ -33,11 +33,11 @@ const [formData, setFormData] = useState({
 useEffect(() => {
     if (project) {
       setFormData({
-        name: project.name || '',
-        description: project.description || '',
-        status: project.status || 'planning',
-        milestone: project.milestone || '',
-        assignee: project.assignee || ''
+        name: project.name_c || project.Name || '',
+        description: project.description_c || '',
+        status: project.status_c || 'planning',
+        milestone: project.milestone_c || '',
+        assignee: project.assignee_c?.Name || ''
       })
     }
     
@@ -68,10 +68,10 @@ const handleChange = (field, value) => {
   // Prepare user options for SearchableSelect
   const userOptions = [
     { value: "", label: "No Assignee", icon: "UserX" },
-    ...users.map(user => ({
-      value: user.name,
-      label: user.name,
-      subtitle: user.role,
+...users.map(user => ({
+      value: user.name_c || user.Name,
+      label: user.name_c || user.Name,
+      subtitle: user.role_c,
       icon: "User"
     }))
   ];
@@ -115,12 +115,12 @@ const handleSubmit = async (e) => {
 
     setLoading(true)
     try {
-      await onSubmit({
-        ...formData,
-        name: formData.name.trim(),
-        description: formData.description.trim(),
-        milestone: formData.milestone.trim(),
-        assignee: formData.assignee ? formData.assignee.trim() : ""
+await onSubmit({
+        name_c: formData.name.trim(),
+        description_c: formData.description.trim(),
+        status_c: formData.status,
+        milestone_c: formData.milestone.trim(),
+        assignee_c: formData.assignee ? formData.assignee.trim() : ""
       })
     } catch (error) {
       // Error handling is done in parent component

@@ -36,21 +36,21 @@ const ProgressSummary = ({
   const statCards = [
     {
       label: "Total Tasks",
-      value: stats.total,
+value: stats.total || 0,
       icon: "List",
       color: "text-primary",
       bgColor: "bg-primary/10"
     },
     {
       label: "Completed",
-      value: stats.completed,
+      value: stats.completed || 0,
       icon: "CheckCircle",
       color: "text-accent",
       bgColor: "bg-accent/10"
     },
     {
       label: "Active",
-      value: stats.active,
+      value: stats.active || 0,
       icon: "Circle",
       color: "text-secondary",
       bgColor: "bg-secondary/10"
@@ -86,7 +86,7 @@ const ProgressSummary = ({
             />
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <span className="text-2xl font-bold bg-gradient-to-r from-accent to-green-500 bg-clip-text text-transparent">
-                {stats.completionRate}%
+{stats.completionRate || 0}%
               </span>
               <span className="text-xs text-gray-500 font-medium">
                 Complete
@@ -116,10 +116,10 @@ const ProgressSummary = ({
               </div>
               <div>
                 <p className="text-sm text-gray-600">
-                  {stat.label}
+{stat.label}
                 </p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {stat.value}
+                  {stat.value || 0}
                 </p>
               </div>
             </motion.div>
@@ -129,7 +129,7 @@ const ProgressSummary = ({
 
       {/* Progress Message */}
       <div className="mt-6 text-center">
-        {stats.completionRate === 100 && stats.total > 0 ? (
+{(stats.completionRate || 0) === 100 && (stats.total || 0) > 0 ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -139,11 +139,11 @@ const ProgressSummary = ({
             <p className="font-semibold">All tasks completed! 🎉</p>
             <p className="text-sm opacity-80">Great job staying focused!</p>
           </motion.div>
-        ) : stats.active > 0 ? (
+        ) : (stats.active || 0) > 0 ? (
           <p className="text-sm text-gray-600">
-            You have {stats.active} active task{stats.active !== 1 ? 's' : ''} remaining. Keep going! 💪
+            You have {stats.active || 0} active task{(stats.active || 0) !== 1 ? 's' : ''} remaining. Keep going! 💪
           </p>
-        ) : stats.total === 0 ? (
+        ) : (stats.total || 0) === 0 ? (
           <p className="text-sm text-gray-600">
             Ready to start your productive day? Create your first task! ✨
           </p>

@@ -1,32 +1,78 @@
-// User service for managing assignee lookup data
 import { toast } from 'react-toastify';
-
-// Mock user data - in a real app, this would come from a database
-const mockUsers = [
-  { Id: 1, name: "Sarah Johnson", email: "sarah.johnson@company.com", role: "Project Manager" },
-  { Id: 2, name: "Mike Chen", email: "mike.chen@company.com", role: "Developer" },
-  { Id: 3, name: "Emily Rodriguez", email: "emily.rodriguez@company.com", role: "Designer" },
-  { Id: 4, name: "David Kim", email: "david.kim@company.com", role: "QA Engineer" },
-  { Id: 5, name: "Lisa Wang", email: "lisa.wang@company.com", role: "Business Analyst" },
-  { Id: 6, name: "Alex Thompson", email: "alex.thompson@company.com", role: "Developer" },
-  { Id: 7, name: "Maria Garcia", email: "maria.garcia@company.com", role: "Product Manager" },
-  { Id: 8, name: "James Wilson", email: "james.wilson@company.com", role: "Tech Lead" }
-];
-
-// Simulate API delay
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 export const userService = {
   async getAll() {
-    await delay(200);
-    return [...mockUsers];
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        fields: [
+          {"field": {"Name": "Id"}},
+          {"field": {"Name": "Name"}},
+          {"field": {"Name": "name_c"}},
+          {"field": {"Name": "email_c"}},
+          {"field": {"Name": "role_c"}}
+        ]
+      };
+
+      const response = await apperClient.fetchRecords('user_c', params);
+
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      return response.data || [];
+    } catch (error) {
+      console.error("Error fetching users:", error?.response?.data?.message || error.message);
+      throw error;
+    }
   },
 
   async getByName(name) {
-    await delay(100);
-    const user = mockUsers.find(user => user.name === name);
-    return user || null;
+    try {
+      const users = await this.getAll();
+      const user = users.find(user => user.name_c === name || user.Name === name);
+      return user || null;
+    } catch (error) {
+      console.error("Error finding user by name:", error?.response?.data?.message || error.message);
+      return null;
+    }
+  },
+
+  async getById(id) {
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        fields: [
+          {"field": {"Name": "Id"}},
+          {"field": {"Name": "Name"}},
+          {"field": {"Name": "name_c"}},
+          {"field": {"Name": "email_c"}},
+          {"field": {"Name": "role_c"}}
+        ]
+      };
+
+      const response = await apperClient.getRecordById('user_c', parseInt(id), params);
+
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching user ${id}:`, error?.response?.data?.message || error.message);
+      throw error;
+    }
   }
 };

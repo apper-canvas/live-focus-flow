@@ -17,11 +17,11 @@ const TaskForm = ({
   className 
 }) => {
 const [formData, setFormData] = useState({
-    title: initialData?.title || "",
-    description: initialData?.description || "",
-    priority: initialData?.priority || "medium",
-    assignee: initialData?.assignee || "",
-    projectId: initialData?.projectId || ""
+    title: initialData?.title_c || initialData?.title || "",
+    description: initialData?.description_c || initialData?.description || "",
+    priority: initialData?.priority_c || initialData?.priority || "medium",
+    assignee: initialData?.assignee_c?.Name || initialData?.assignee || "",
+    projectId: initialData?.project_id_c?.Id || initialData?.projectId || ""
   });
   const [users, setUsers] = useState([]);
   const [usersLoading, setUsersLoading] = useState(false);
@@ -56,11 +56,11 @@ useEffect(() => {
   }, [isOpen]);
 
 // Prepare project options for SearchableSelect
-  const projectOptions = [
+const projectOptions = [
     { value: "", label: "No Project", icon: "Folder" },
     ...projects.map(project => ({
       value: project.Id,
-      label: project.name,
+      label: project.name_c || project.Name,
       icon: "FolderOpen"
     }))
   ];
@@ -69,9 +69,9 @@ useEffect(() => {
   const userOptions = [
     { value: "", label: "No Assignee", icon: "UserX" },
     ...users.map(user => ({
-      value: user.name,
-      label: user.name,
-      subtitle: user.role,
+      value: user.name_c || user.Name,
+      label: user.name_c || user.Name,
+      subtitle: user.role_c,
       icon: "User"
     }))
   ];
@@ -104,9 +104,12 @@ const handleSubmit = async (e) => {
 
     setIsSubmitting(true);
     try {
-      await onSubmit?.({
-        ...formData,
-        assignee: formData.assignee ? formData.assignee.trim() : ""
+await onSubmit?.({
+        title_c: formData.title.trim(),
+        description_c: formData.description.trim(),
+        priority_c: formData.priority,
+        assignee_c: formData.assignee ? formData.assignee.trim() : "",
+        project_id_c: formData.projectId || null
       });
       setFormData({ title: "", description: "", priority: "medium", assignee: "", projectId: "" });
       setErrors({});

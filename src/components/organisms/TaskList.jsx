@@ -25,8 +25,21 @@ const TaskList = ({
     setError("");
     
     try {
-      const data = await taskService.getAll();
-      setTasks(data);
+const data = await taskService.getAll();
+      // Map database field names to component expected names for compatibility
+      const mappedTasks = data.map(task => ({
+        ...task,
+        title: task.title_c || task.Name,
+        description: task.description_c || '',
+        priority: task.priority_c || 'medium',
+        completed: task.completed_c || false,
+        assignee: task.assignee_c?.Name || '',
+        projectId: task.project_id_c?.Id || null,
+        createdAt: task.created_at_c,
+        updatedAt: task.updated_at_c,
+        order: task.order_c || 0
+      }));
+      setTasks(mappedTasks);
     } catch (err) {
       setError("Failed to load tasks. Please try again.");
       console.error("Error loading tasks:", err);
@@ -40,7 +53,7 @@ const TaskList = ({
   }, [refreshTrigger]);
 
   const handleToggleComplete = async (taskId) => {
-    const task = tasks.find(t => t.Id === taskId);
+const task = tasks.find(t => t.Id === taskId);
     if (!task) return;
 
     const updatedTask = { ...task, completed: !task.completed };
@@ -48,7 +61,18 @@ const TaskList = ({
     // Optimistic update
     setTasks(prevTasks => 
       prevTasks.map(t => 
-        t.Id === taskId ? updatedTask : t
+t.Id === taskId ? {
+          ...updatedTask,
+          title: updatedTask.title_c || updatedTask.Name,
+          description: updatedTask.description_c || '',
+          priority: updatedTask.priority_c || 'medium',
+          completed: updatedTask.completed_c || false,
+          assignee: updatedTask.assignee_c?.Name || '',
+          projectId: updatedTask.project_id_c?.Id || null,
+          createdAt: updatedTask.created_at_c,
+          updatedAt: updatedTask.updated_at_c,
+          order: updatedTask.order_c || 0
+        } : t
       )
     );
 
@@ -68,7 +92,18 @@ const TaskList = ({
       // Revert optimistic update
       setTasks(prevTasks => 
         prevTasks.map(t => 
-          t.Id === taskId ? task : t
+t.Id === taskId ? {
+            ...task,
+            title: task.title_c || task.Name,
+            description: task.description_c || '',
+            priority: task.priority_c || 'medium',
+            completed: task.completed_c || false,
+            assignee: task.assignee_c?.Name || '',
+            projectId: task.project_id_c?.Id || null,
+            createdAt: task.created_at_c,
+            updatedAt: task.updated_at_c,
+            order: task.order_c || 0
+          } : t
         )
       );
       toast.error("Failed to update task");

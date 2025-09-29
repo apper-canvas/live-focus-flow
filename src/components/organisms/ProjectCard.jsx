@@ -26,7 +26,7 @@ const STATUS_CONFIG = {
 }
 
 export default function ProjectCard({ project, onEdit, onDelete }) {
-  const status = STATUS_CONFIG[project.status] || STATUS_CONFIG.planning
+const status = STATUS_CONFIG[project.status_c || project.status] || STATUS_CONFIG.planning
 
   return (
     <motion.div
@@ -41,7 +41,7 @@ export default function ProjectCard({ project, onEdit, onDelete }) {
           </div>
           <div className="min-w-0 flex-1">
             <h3 className="font-semibold text-gray-900 truncate" title={project.name}>
-              {project.name}
+{project.name_c || project.Name}
             </h3>
             <Badge variant={status.variant} className="mt-1">
               {status.label}
@@ -71,7 +71,7 @@ export default function ProjectCard({ project, onEdit, onDelete }) {
       </div>
 
       {/* Description */}
-      {project.description && (
+{(project.description_c || project.description) && (
         <div className="mb-4">
           <p className="text-sm text-gray-600 line-clamp-3" title={project.description}>
             {project.description}
@@ -80,7 +80,7 @@ export default function ProjectCard({ project, onEdit, onDelete }) {
       )}
 
       {/* Milestone */}
-      {project.milestone && (
+{(project.milestone_c || project.milestone) && (
         <div className="mb-4">
           <div className="flex items-center gap-2 text-sm">
             <ApperIcon name="Target" className="h-4 w-4 text-gray-400" />
@@ -92,7 +92,7 @@ export default function ProjectCard({ project, onEdit, onDelete }) {
         </div>
       )}
 {/* Assignee */}
-      {project.assignee && (
+{(project.assignee_c?.Name || project.assignee) && (
         <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
           <ApperIcon name="User" className="h-4 w-4" />
           <span>Assigned to: <span className="font-medium">{project.assignee}</span></span>

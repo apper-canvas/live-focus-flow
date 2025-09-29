@@ -1,119 +1,216 @@
-import projectsData from '@/services/mockData/projects.json';
-
-// Create a copy to avoid mutating the original data
-let projects = [...projectsData];
-
-// Simulate network delay
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+import { toast } from 'react-toastify';
 
 export const projectService = {
-  // Get all projects
-async getAll() {
-    await delay(200);
-    const { user, isOwner } = getCurrentUser();
-    
-    // If owner, return all projects; otherwise filter by assignee
-    if (isOwner) {
-      return [...projects];
+  async getAll() {
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        fields: [
+          {"field": {"Name": "Id"}},
+          {"field": {"Name": "Name"}},
+          {"field": {"Name": "name_c"}},
+          {"field": {"Name": "description_c"}},
+          {"field": {"Name": "status_c"}},
+          {"field": {"Name": "milestone_c"}},
+          {"field": {"Name": "assignee_c"}}
+        ]
+      };
+
+      const response = await apperClient.fetchRecords('project_c', params);
+
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      return response.data || [];
+    } catch (error) {
+      console.error("Error fetching projects:", error?.response?.data?.message || error.message);
+      throw error;
     }
-    
-// Filter projects by assignee name (now from lookup)
-    const userProjects = projects.filter(project => project.assignee === user);
-    return [...userProjects];
   },
 
-  // Get project by ID
-async getById(id) {
-    await delay(150);
-    const currentUser = getCurrentUser();
-    const project = projects.find(p => p.Id === parseInt(id));
-    
-    if (!project) {
-      throw new Error(`Project with ID ${id} not found`);
-}
-    
-    // Check if user has access to this project (skip check for owner)
-const { user, isOwner } = getCurrentUser();
-    // Check access using assignee name from lookup
-    if (!isOwner && project.assignee !== user) {
-      throw new Error(`Access denied: You don't have permission to view this project`);
+  async getById(id) {
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        fields: [
+          {"field": {"Name": "Id"}},
+          {"field": {"Name": "Name"}},
+          {"field": {"Name": "name_c"}},
+          {"field": {"Name": "description_c"}},
+          {"field": {"Name": "status_c"}},
+          {"field": {"Name": "milestone_c"}},
+          {"field": {"Name": "assignee_c"}}
+        ]
+      };
+
+      const response = await apperClient.getRecordById('project_c', parseInt(id), params);
+
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching project ${id}:`, error?.response?.data?.message || error.message);
+      throw error;
     }
-    return { ...project };
   },
 
-// Create new project
-async create(projectData) {
-    await delay(300);
-    const { user } = getCurrentUser();
-    const maxId = projects.reduce((max, p) => Math.max(max, p.Id), 0);
-    
-    const newProject = {
-      Id: maxId + 1,
-      name: projectData.name,
-      description: projectData.description || "",
-      status: projectData.status || "planning",
-      milestone: projectData.milestone || "",
-      assignee: projectData.assignee || user // Use lookup value or current user as fallback
-    };
+  async create(projectData) {
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
 
-    projects.push(newProject);
-    return { ...newProject };
+      const params = {
+        records: [{
+          Name: projectData.name || projectData.name_c,
+          name_c: projectData.name || projectData.name_c,
+          description_c: projectData.description || projectData.description_c || "",
+          status_c: projectData.status || projectData.status_c || "planning",
+          milestone_c: projectData.milestone || projectData.milestone_c || "",
+          assignee_c: projectData.assignee && projectData.assignee !== "" ? 
+            (typeof projectData.assignee === 'object' ? projectData.assignee.Id : parseInt(projectData.assignee)) : null
+        }]
+      };
+
+      const response = await apperClient.createRecord('project_c', params);
+
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      if (response.results) {
+        const failed = response.results.filter(r => !r.success);
+        if (failed.length > 0) {
+          console.error(`Failed to create project:`, failed);
+          failed.forEach(record => {
+            record.errors?.forEach(error => toast.error(`${error.fieldLabel}: ${error}`));
+            if (record.message) toast.error(record.message);
+          });
+          throw new Error("Failed to create project");
+        }
+        return response.results[0].data;
+      }
+    } catch (error) {
+      console.error("Error creating project:", error?.response?.data?.message || error.message);
+      throw error;
+    }
   },
 
-  // Update existing project
-async update(id, updates) {
-    await delay(250);
-    const currentUser = getCurrentUser();
-    const index = projects.findIndex(p => p.Id === parseInt(id));
-    
-    if (index === -1) {
-      throw new Error(`Project with ID ${id} not found`);
-    }
+  async update(id, updates) {
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
 
-// Check if user has access to this project (skip check for owner)
-    const { user, isOwner } = getCurrentUser();
-    // Check access using assignee name from lookup
-    if (!isOwner && projects[index].assignee !== user) {
-      throw new Error(`Access denied: You don't have permission to modify this project`);
-    }
+      const updateData = {
+        Id: parseInt(id)
+      };
 
-    projects[index] = {
-      ...projects[index],
-      ...updates
-    };
-    return { ...projects[index] };
+      // Map field names and handle lookups
+      if (updates.name !== undefined) updateData.name_c = updates.name;
+      if (updates.name_c !== undefined) updateData.name_c = updates.name_c;
+      if (updates.Name !== undefined) updateData.Name = updates.Name;
+      
+      if (updates.description !== undefined) updateData.description_c = updates.description;
+      if (updates.description_c !== undefined) updateData.description_c = updates.description_c;
+      
+      if (updates.status !== undefined) updateData.status_c = updates.status;
+      if (updates.status_c !== undefined) updateData.status_c = updates.status_c;
+      
+      if (updates.milestone !== undefined) updateData.milestone_c = updates.milestone;
+      if (updates.milestone_c !== undefined) updateData.milestone_c = updates.milestone_c;
+
+      if (updates.assignee !== undefined) {
+        updateData.assignee_c = updates.assignee && updates.assignee !== "" ? 
+          (typeof updates.assignee === 'object' ? updates.assignee.Id : parseInt(updates.assignee)) : null;
+      }
+      if (updates.assignee_c !== undefined) {
+        updateData.assignee_c = updates.assignee_c && updates.assignee_c !== "" ? 
+          (typeof updates.assignee_c === 'object' ? updates.assignee_c.Id : parseInt(updates.assignee_c)) : null;
+      }
+
+      const params = {
+        records: [updateData]
+      };
+
+      const response = await apperClient.updateRecord('project_c', params);
+
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      if (response.results) {
+        const failed = response.results.filter(r => !r.success);
+        if (failed.length > 0) {
+          console.error(`Failed to update project:`, failed);
+          failed.forEach(record => {
+            record.errors?.forEach(error => toast.error(`${error.fieldLabel}: ${error}`));
+            if (record.message) toast.error(record.message);
+          });
+          throw new Error("Failed to update project");
+        }
+        return response.results[0].data;
+      }
+    } catch (error) {
+      console.error("Error updating project:", error?.response?.data?.message || error.message);
+      throw error;
+    }
   },
 
-  // Delete project
-async delete(id) {
-    await delay(200);
-    const currentUser = getCurrentUser();
-    const index = projects.findIndex(p => p.Id === parseInt(id));
-    
-    if (index === -1) {
-      throw new Error(`Project with ID ${id} not found`);
-    }
+  async delete(id) {
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
 
-// Check if user has access to this project (skip check for owner)
-const { user, isOwner } = getCurrentUser();
-    // Check access using assignee name from lookup
-    if (!isOwner && projects[index].assignee !== user) {
-      throw new Error(`Access denied: You don't have permission to delete this project`);
-    }
+      const params = {
+        RecordIds: [parseInt(id)]
+      };
 
-    const deletedProject = projects.splice(index, 1)[0];
-    return { ...deletedProject };
+      const response = await apperClient.deleteRecord('project_c', params);
+
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      if (response.results) {
+        const failed = response.results.filter(r => !r.success);
+        if (failed.length > 0) {
+          console.error(`Failed to delete project:`, failed);
+          failed.forEach(record => {
+            if (record.message) toast.error(record.message);
+          });
+          throw new Error("Failed to delete project");
+        }
+        return true;
+      }
+    } catch (error) {
+      console.error("Error deleting project:", error?.response?.data?.message || error.message);
+      throw error;
+    }
   }
 };
-
-// Helper function to get current user
-function getCurrentUser() {
-  // In a real application, this would come from authentication context
-  const user = import.meta?.env?.VITE_CURRENT_USER || 'current-user';
-  const appOwner = import.meta?.env?.VITE_APP_OWNER;
-  const isOwner = appOwner && user === appOwner;
-  
-  return { user, isOwner };
-}

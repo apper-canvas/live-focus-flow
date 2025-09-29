@@ -69,7 +69,7 @@ const TaskCard = ({
     }
   };
 
-  const priorityConfig = getPriorityConfig(task.priority);
+const priorityConfig = getPriorityConfig(task.priority_c || task.priority);
 
   return (
     <motion.div
@@ -80,7 +80,7 @@ const TaskCard = ({
       whileHover={{ y: -2, shadow: "0 8px 25px -5px rgba(0, 0, 0, 0.1)" }}
       className={cn(
         "group relative overflow-hidden rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-200",
-        task.completed && "opacity-60",
+(task.completed_c || task.completed) && "opacity-60",
         isDeleting && "opacity-50 pointer-events-none",
         className
       )}
@@ -94,11 +94,11 @@ const TaskCard = ({
       <div className="flex items-start gap-4">
         <div className="mt-1">
           <Checkbox
-            checked={task.completed}
+checked={task.completed_c || task.completed}
             onChange={handleToggleComplete}
             disabled={isUpdating}
             className={cn(
-              task.completed && "checkbox-bounce"
+(task.completed_c || task.completed) && "checkbox-bounce"
             )}
           />
         </div>
@@ -108,14 +108,14 @@ const TaskCard = ({
             <div className="min-w-0 flex-1">
               <h3 className={cn(
                 "font-semibold text-gray-900 transition-all duration-200",
-                task.completed && "text-gray-500 line-through"
+(task.completed_c || task.completed) && "text-gray-500 line-through"
               )}>
                 {task.title}
               </h3>
-              {task.description && (
+{(task.description_c || task.description) && (
                 <p className={cn(
                   "mt-2 text-sm text-gray-600",
-                  task.completed && "text-gray-400 line-through"
+                  (task.completed_c || task.completed) && "text-gray-400 line-through"
                 )}>
                   {task.description}
                 </p>
@@ -161,16 +161,16 @@ const TaskCard = ({
             {/* Task Metadata */}
             <div className="flex items-center justify-between text-xs text-gray-500 mt-2">
               <div className="flex items-center gap-3">
-                {task.assignee && (
+{(task.assignee_c?.Name || task.assignee) && (
                   <div className="flex items-center gap-1">
                     <ApperIcon name="User" className="h-3 w-3" />
-                    <span>{task.assignee}</span>
+                    <span>{task.assignee_c?.Name || task.assignee}</span>
                   </div>
                 )}
-                {task.projectId && (
+                {(task.project_id_c?.Id || task.projectId) && (
                   <div className="flex items-center gap-1">
                     <ApperIcon name="FolderOpen" className="h-3 w-3" />
-                    <span>Project #{task.projectId}</span>
+                    <span>Project #{task.project_id_c?.Id || task.projectId}</span>
                   </div>
                 )}
               </div>
@@ -183,7 +183,7 @@ const TaskCard = ({
       </div>
 
       {/* Completion overlay */}
-      {task.completed && (
+{(task.completed_c || task.completed) && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
