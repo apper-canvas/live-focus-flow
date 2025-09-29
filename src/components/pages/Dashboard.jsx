@@ -75,8 +75,8 @@ const handleCreateTask = () => {
               >
                 <ApperIcon name="BarChart3" className="mr-2 h-4 w-4" />
                 Dashboard
-              </Button>
-<Button
+</Button>
+              <Button
                 variant="ghost"
                 onClick={() => navigate('/tasks')}
               >
@@ -129,8 +129,8 @@ const handleCreateTask = () => {
             <ProgressSummary refreshTrigger={refreshTrigger} />
           </motion.div>
 
-          {/* Quick Actions */}
-<motion.div
+{/* Quick Actions */}
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -173,23 +173,23 @@ const handleCreateTask = () => {
                 </Button>
               </div>
             </div>
-          </motion.div>
-</div>
-      </main>
-    </div>
+</motion.div>
+        </div>
+</main>
 
-    {/* Task Creation Modal */}
-    <TaskForm
-      isOpen={showTaskForm}
+      {/* Task Creation Modal */}
+      <TaskForm
+        isOpen={showTaskForm}
         onClose={() => setShowTaskForm(false)}
         onSubmit={handleTaskSubmit}
       />
 
       {/* Project Creation Modal */}
       <ProjectForm
+        isOpen={showProjectForm}
         onClose={() => setShowProjectForm(false)}
         onSubmit={handleProjectSubmit}
-        project={showProjectForm ? null : undefined}
+        project={null}
       />
     </div>
   );
