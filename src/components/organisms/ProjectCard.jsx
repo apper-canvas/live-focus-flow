@@ -73,8 +73,8 @@ const status = STATUS_CONFIG[project.status_c || project.status] || STATUS_CONFI
       {/* Description */}
 {(project.description_c || project.description) && (
         <div className="mb-4">
-          <p className="text-sm text-gray-600 line-clamp-3" title={project.description}>
-            {project.description}
+          <p className="text-sm text-gray-600 line-clamp-3" title={project.description_c || project.description}>
+            {project.description_c || project.description}
           </p>
         </div>
       )}
@@ -86,8 +86,8 @@ const status = STATUS_CONFIG[project.status_c || project.status] || STATUS_CONFI
             <ApperIcon name="Target" className="h-4 w-4 text-gray-400" />
             <span className="text-gray-600 font-medium">Current Milestone:</span>
           </div>
-          <p className="text-sm text-gray-700 mt-1 pl-6" title={project.milestone}>
-            {project.milestone}
+          <p className="text-sm text-gray-700 mt-1 pl-6" title={project.milestone_c || project.milestone}>
+            {project.milestone_c || project.milestone}
           </p>
         </div>
       )}
@@ -95,7 +95,7 @@ const status = STATUS_CONFIG[project.status_c || project.status] || STATUS_CONFI
 {(project.assignee_c?.Name || project.assignee) && (
         <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
           <ApperIcon name="User" className="h-4 w-4" />
-          <span>Assigned to: <span className="font-medium">{project.assignee}</span></span>
+          <span>Assigned to: <span className="font-medium">{project.assignee_c?.Name || project.assignee}</span></span>
         </div>
       )}
 

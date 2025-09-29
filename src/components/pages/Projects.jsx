@@ -13,8 +13,6 @@ import SearchBar from "@/components/molecules/SearchBar";
 import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
 import Loading from "@/components/ui/Loading";
-import mockProjects from "@/services/mockData/projects.json";
-import mockTasks from "@/services/mockData/tasks.json";
 export default function Projects() {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -129,22 +127,22 @@ export default function Projects() {
   }
 
   // Filter projects
-  const filteredProjects = projects.filter(project => {
+const filteredProjects = projects.filter(project => {
     const matchesSearch = !searchQuery || 
-      project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      project.description.toLowerCase().includes(searchQuery.toLowerCase())
+      (project.name_c || project.Name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (project.description_c || project.description || '').toLowerCase().includes(searchQuery.toLowerCase())
     
-    const matchesStatus = statusFilter === 'all' || project.status === statusFilter
+const matchesStatus = statusFilter === 'all' || (project.status_c || project.status) === statusFilter
     
     return matchesSearch && matchesStatus
   })
 
   const projectCount = filteredProjects.length
-  const statusCounts = {
+const statusCounts = {
     all: projects.length,
-    active: projects.filter(p => p.status === 'active').length,
-    planning: projects.filter(p => p.status === 'planning').length,
-    completed: projects.filter(p => p.status === 'completed').length
+    active: projects.filter(p => (p.status_c || p.status) === 'active').length,
+    planning: projects.filter(p => (p.status_c || p.status) === 'planning').length,
+    completed: projects.filter(p => (p.status_c || p.status) === 'completed').length
   }
 
   if (loading) {

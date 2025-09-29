@@ -7,8 +7,6 @@ import Input from "@/components/atoms/Input";
 import Textarea from "@/components/atoms/Textarea";
 import SearchableSelect from "@/components/atoms/SearchableSelect";
 import Loading from "@/components/ui/Loading";
-import projectsData from "@/services/mockData/projects.json";
-import tasksData from "@/services/mockData/tasks.json";
 
 const PROJECT_STATUSES = [
   { value: 'planning', label: 'Planning', icon: 'Calendar' },
