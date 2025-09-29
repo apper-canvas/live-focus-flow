@@ -14,17 +14,18 @@ import TaskForm from "@/components/organisms/TaskForm";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
-const [showTaskForm, setShowTaskForm] = useState(false);
+const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [showTaskForm, setShowTaskForm] = useState(false);
   const [showProjectForm, setShowProjectForm] = useState(false);
 
-const handleCreateTask = () => {
+  const handleCreateTask = () => {
     setShowTaskForm(true);
   };
 
   const handleCreateProject = () => {
     setShowProjectForm(true);
   };
+
 
   const handleTaskSubmit = async (taskData) => {
     try {
@@ -129,51 +130,6 @@ const handleCreateTask = () => {
             <ProgressSummary refreshTrigger={refreshTrigger} />
           </motion.div>
 
-{/* Quick Actions */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="max-w-4xl mx-auto"
-          >
-            <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-white to-gray-50 p-6 shadow-lg">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Quick Actions
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Button
-                  onClick={handleCreateProject}
-                  className="h-16 gradient-primary justify-start text-left"
-                >
-                  <div className="flex items-center">
-                    <div className="rounded-lg bg-white/20 p-2 mr-4">
-                      <ApperIcon name="FolderPlus" className="h-6 w-6 text-white" />
-                    </div>
-                    <div>
-                      <div className="font-semibold">Create New Project</div>
-                      <div className="text-sm opacity-80">Add a project to your workspace</div>
-                    </div>
-                  </div>
-                </Button>
-                
-                <Button
-                  onClick={handleCreateTask}
-                  variant="outline"
-                  className="h-16 justify-start text-left border-gray-200 hover:border-primary hover:bg-primary/5"
-                >
-                  <div className="flex items-center">
-                    <div className="rounded-lg bg-primary/10 p-2 mr-4">
-                      <ApperIcon name="Plus" className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <div className="font-semibold text-gray-900">Create New Task</div>
-                      <div className="text-sm text-gray-500">Add a task to your list</div>
-                    </div>
-                  </div>
-                </Button>
-              </div>
-            </div>
-</motion.div>
         </div>
 </main>
 
@@ -184,12 +140,11 @@ const handleCreateTask = () => {
         onSubmit={handleTaskSubmit}
       />
 
-      {/* Project Creation Modal */}
+{/* Project Creation Modal */}
       <ProjectForm
         isOpen={showProjectForm}
         onClose={() => setShowProjectForm(false)}
         onSubmit={handleProjectSubmit}
-        project={null}
       />
     </div>
   );
