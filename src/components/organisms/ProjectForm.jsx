@@ -17,9 +17,21 @@ export default function ProjectForm({ project, onSubmit, onClose }) {
     description: '',
     status: 'planning',
     milestone: ''
-  })
+})
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState({})
+
+  // Handle escape key to close modal
+  useEffect(() => {
+    const handleEscapeKey = (event) => {
+      if (event.key === 'Escape') {
+        onClose()
+      }
+    }
+    
+    document.addEventListener('keydown', handleEscapeKey)
+    return () => document.removeEventListener('keydown', handleEscapeKey)
+  }, [onClose])
 
   // Populate form when editing
   useEffect(() => {
@@ -32,7 +44,6 @@ export default function ProjectForm({ project, onSubmit, onClose }) {
       })
     }
   }, [project])
-
   // Handle input changes
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }))
