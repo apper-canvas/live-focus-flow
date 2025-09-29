@@ -104,8 +104,9 @@ setFormData({ title: "", description: "", priority: "medium", assignee: "", proj
           transition={{ duration: 0.3 }}
           className={cn("overflow-hidden", className)}
         >
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg">
-            <div className="mb-6 flex items-center justify-between">
+<div className="rounded-xl border border-gray-200 bg-white shadow-lg max-h-[90vh] flex flex-col">
+            {/* Fixed Header */}
+            <div className="flex items-center justify-between p-6 pb-4 border-b border-gray-100 shrink-0">
               <h3 className="text-lg font-semibold text-gray-900">
                 {initialData ? "Edit Task" : "Create New Task"}
               </h3>
@@ -119,7 +120,10 @@ setFormData({ title: "", description: "", priority: "medium", assignee: "", proj
               </Button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Scrollable Form Content */}
+            <div className="flex-1 overflow-y-auto max-h-[70vh]">
+              <div className="p-6 pt-4">
+                <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-700">
                   Task Title
@@ -214,8 +218,10 @@ setFormData({ title: "", description: "", priority: "medium", assignee: "", proj
                 >
                   Cancel
                 </Button>
+</div>
+                </form>
               </div>
-            </form>
+            </div>
           </div>
         </motion.div>
       )}
