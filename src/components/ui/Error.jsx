@@ -25,11 +25,11 @@ const Error = ({
       <h3 className="mb-2 text-lg font-semibold text-red-900">
         Oops! Something went wrong
       </h3>
-      
-      <p className="mb-6 max-w-md text-sm text-red-700">
-        {message}
+<p className="mb-6 max-w-md text-sm text-red-700">
+        {message === 'Authentication required for database operations' 
+          ? 'Please log in to access this feature. Your session may have expired.'
+          : message}
       </p>
-      
       {onRetry && (
         <Button
           onClick={onRetry}

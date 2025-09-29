@@ -3,6 +3,17 @@ import { toast } from 'react-toastify';
 export const userService = {
   async getAll() {
     try {
+// Check authentication before database operations
+      const store = await import('@/store/index.js');
+      const state = store.default.getState();
+      const { user, isAuthenticated } = state.user;
+      
+      if (!isAuthenticated || !user) {
+        console.error('User must be authenticated to perform database operations');
+        toast.error('Please log in to continue');
+        throw new Error('Authentication required for database operations');
+      }
+
       const { ApperClient } = window.ApperSDK;
       const apperClient = new ApperClient({
         apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
@@ -46,6 +57,17 @@ export const userService = {
 
   async getById(id) {
     try {
+// Check authentication before database operations
+      const store = await import('@/store/index.js');
+      const state = store.default.getState();
+      const { user, isAuthenticated } = state.user;
+      
+      if (!isAuthenticated || !user) {
+        console.error('User must be authenticated to perform database operations');
+        toast.error('Please log in to continue');
+        throw new Error('Authentication required for database operations');
+      }
+
       const { ApperClient } = window.ApperSDK;
       const apperClient = new ApperClient({
         apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,

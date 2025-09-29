@@ -3,6 +3,17 @@ import { toast } from 'react-toastify';
 export const taskService = {
   async getAll() {
     try {
+// Check authentication before database operations
+      const store = await import('@/store/index.js');
+      const state = store.default.getState();
+      const { user, isAuthenticated } = state.user;
+      
+      if (!isAuthenticated || !user) {
+        console.error('User must be authenticated to perform database operations');
+        toast.error('Please log in to continue');
+        throw new Error('Authentication required for database operations');
+      }
+
       const { ApperClient } = window.ApperSDK;
       const apperClient = new ApperClient({
         apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
@@ -43,11 +54,22 @@ export const taskService = {
   async getById(id) {
     try {
       const { ApperClient } = window.ApperSDK;
+// Check authentication before database operations
+      const store = await import('@/store/index.js');
+      const state = store.default.getState();
+      const { user, isAuthenticated } = state.user;
+      
+      if (!isAuthenticated || !user) {
+        console.error('User must be authenticated to perform database operations');
+        toast.error('Please log in to continue');
+        throw new Error('Authentication required for database operations');
+      }
+
+      const { ApperClient } = window.ApperSDK;
       const apperClient = new ApperClient({
         apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
         apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
       });
-
       const params = {
         fields: [
           {"field": {"Name": "Id"}},
@@ -80,6 +102,17 @@ export const taskService = {
 
   async create(taskData) {
     try {
+// Check authentication before database operations
+      const store = await import('@/store/index.js');
+      const state = store.default.getState();
+      const { user, isAuthenticated } = state.user;
+      
+      if (!isAuthenticated || !user) {
+        console.error('User must be authenticated to perform database operations');
+        toast.error('Please log in to continue');
+        throw new Error('Authentication required for database operations');
+      }
+
       const { ApperClient } = window.ApperSDK;
       const apperClient = new ApperClient({
         apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
@@ -134,6 +167,17 @@ export const taskService = {
 
   async update(id, updates) {
     try {
+// Check authentication before database operations
+      const store = await import('@/store/index.js');
+      const state = store.default.getState();
+      const { user, isAuthenticated } = state.user;
+      
+      if (!isAuthenticated || !user) {
+        console.error('User must be authenticated to perform database operations');
+        toast.error('Please log in to continue');
+        throw new Error('Authentication required for database operations');
+      }
+
       const { ApperClient } = window.ApperSDK;
       const apperClient = new ApperClient({
         apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
@@ -212,11 +256,22 @@ export const taskService = {
   async delete(id) {
     try {
       const { ApperClient } = window.ApperSDK;
+// Check authentication before database operations
+      const store = await import('@/store/index.js');
+      const state = store.default.getState();
+      const { user, isAuthenticated } = state.user;
+      
+      if (!isAuthenticated || !user) {
+        console.error('User must be authenticated to perform database operations');
+        toast.error('Please log in to continue');
+        throw new Error('Authentication required for database operations');
+      }
+
+      const { ApperClient } = window.ApperSDK;
       const apperClient = new ApperClient({
         apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
         apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
       });
-
       const params = {
         RecordIds: [parseInt(id)]
       };
@@ -252,6 +307,17 @@ export const taskService = {
         order_c: index + 1,
         updated_at_c: new Date().toISOString()
       }));
+
+// Check authentication before database operations
+      const store = await import('@/store/index.js');
+      const state = store.default.getState();
+      const { user, isAuthenticated } = state.user;
+      
+      if (!isAuthenticated || !user) {
+        console.error('User must be authenticated to perform database operations');
+        toast.error('Please log in to continue');
+        throw new Error('Authentication required for database operations');
+      }
 
       const { ApperClient } = window.ApperSDK;
       const apperClient = new ApperClient({
