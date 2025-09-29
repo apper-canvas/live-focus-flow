@@ -4,24 +4,38 @@ import { cn } from "@/utils/cn";
 import ApperIcon from "@/components/ApperIcon";
 import ProgressRing from "@/components/molecules/ProgressRing";
 import { taskService } from "@/services/api/taskService";
-
+import { projectService } from "@/services/api/projectService";
 const ProgressSummary = ({ 
   refreshTrigger = 0,
   className 
 }) => {
   const [stats, setStats] = useState({
-    total: 0,
-    completed: 0,
-    active: 0,
-    completionRate: 0
+tasks: {
+      total: 0,
+      completed: 0,
+      active: 0,
+      completionRate: 0
+    },
+    projects: {
+      total: 0,
+      completed: 0,
+      active: 0,
+      completionRate: 0
+    }
   });
   const [loading, setLoading] = useState(false);
 
-  const loadStats = async () => {
+const loadStats = async () => {
     setLoading(true);
     try {
-      const data = await taskService.getStats();
-      setStats(data);
+      const [taskData, projectData] = await Promise.all([
+        taskService.getStats(),
+        projectService.getStats()
+      ]);
+      setStats({
+        tasks: taskData,
+        projects: projectData
+      });
     } catch (error) {
       console.error("Error loading stats:", error);
     } finally {
@@ -36,24 +50,45 @@ const ProgressSummary = ({
   const statCards = [
     {
       label: "Total Tasks",
-      value: stats.total,
+value: stats.projects.total,
+      icon: "Folder",
+      color: "text-purple-600",
+      bgColor: "bg-purple-100"
+    },
+    {
+      label: "Working Projects",
+      value: stats.projects.active,
+      icon: "FolderOpen",
+      color: "text-blue-600",
+      bgColor: "bg-blue-100"
+    },
+    {
+      label: "Completed Projects",
+      value: stats.projects.completed,
+      icon: "FolderCheck",
+      color: "text-green-600",
+      bgColor: "bg-green-100"
+    },
+    {
+      label: "Total Tasks",
+      value: stats.tasks.total,
       icon: "List",
       color: "text-primary",
       bgColor: "bg-primary/10"
     },
     {
-      label: "Completed",
-      value: stats.completed,
-      icon: "CheckCircle",
-      color: "text-accent",
-      bgColor: "bg-accent/10"
-    },
-    {
-      label: "Active",
-      value: stats.active,
+      label: "Working Tasks",
+      value: stats.tasks.active,
       icon: "Circle",
       color: "text-secondary",
       bgColor: "bg-secondary/10"
+    },
+    {
+      label: "Completed Tasks",
+      value: stats.tasks.completed,
+      icon: "CheckCircle",
+      color: "text-accent",
+      bgColor: "bg-accent/10"
     }
   ];
 
@@ -76,27 +111,27 @@ const ProgressSummary = ({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-        {/* Progress Ring */}
+{/* Progress Ring for Tasks */}
         <div className="flex justify-center">
           <div className="relative">
             <ProgressRing 
-              progress={stats.completionRate} 
+              progress={stats.tasks.completionRate} 
               size={120} 
               strokeWidth={8}
             />
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <span className="text-2xl font-bold bg-gradient-to-r from-accent to-green-500 bg-clip-text text-transparent">
-                {stats.completionRate}%
+                {stats.tasks.completionRate}%
               </span>
               <span className="text-xs text-gray-500 font-medium">
-                Complete
+                Tasks Complete
               </span>
             </div>
           </div>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 gap-4">
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {statCards.map((stat, index) => (
             <motion.div
               key={stat.label}
@@ -127,9 +162,9 @@ const ProgressSummary = ({
         </div>
       </div>
 
-      {/* Progress Message */}
+{/* Progress Message */}
       <div className="mt-6 text-center">
-        {stats.completionRate === 100 && stats.total > 0 ? (
+        {stats.tasks.completionRate === 100 && stats.tasks.total > 0 ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -139,13 +174,13 @@ const ProgressSummary = ({
             <p className="font-semibold">All tasks completed! 🎉</p>
             <p className="text-sm opacity-80">Great job staying focused!</p>
           </motion.div>
-        ) : stats.active > 0 ? (
+        ) : stats.tasks.active > 0 || stats.projects.active > 0 ? (
           <p className="text-sm text-gray-600">
-            You have {stats.active} active task{stats.active !== 1 ? 's' : ''} remaining. Keep going! 💪
+            You have {stats.tasks.active} active task{stats.tasks.active !== 1 ? 's' : ''} and {stats.projects.active} active project{stats.projects.active !== 1 ? 's' : ''} remaining. Keep going! 💪
           </p>
-        ) : stats.total === 0 ? (
+        ) : stats.tasks.total === 0 && stats.projects.total === 0 ? (
           <p className="text-sm text-gray-600">
-            Ready to start your productive day? Create your first task! ✨
+            Ready to start your productive day? Create your first project or task! ✨
           </p>
         ) : null}
       </div>

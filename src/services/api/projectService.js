@@ -1,4 +1,4 @@
-import projectsData from '@/services/mockData/projects.json';
+import projectsData from "@/services/mockData/projects.json";
 
 // Create a copy to avoid mutating the original data
 let projects = [...projectsData];
@@ -51,14 +51,43 @@ export const projectService = {
       throw new Error(`Project with ID ${id} not found`);
     }
 
-    projects[index] = {
+projects[index] = {
       ...projects[index],
       ...updates
     };
+
     return { ...projects[index] };
   },
 
-  // Delete project
+  // Get project statistics
+  async getStats() {
+    try {
+      await delay(300);
+      
+      const projectsCopy = projects.map(project => ({ ...project }));
+      
+      const total = projectsCopy.length;
+      const completed = projectsCopy.filter(project => project.status === 'completed').length;
+      const active = projectsCopy.filter(project => project.status === 'active').length;
+      const completionRate = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+      return {
+        total,
+        completed,
+        active,
+        completionRate
+      };
+    } catch (error) {
+      console.error('Error getting project stats:', error);
+      return {
+        total: 0,
+        completed: 0,
+        active: 0,
+        completionRate: 0
+      };
+    }
+  },
+// Delete project
   async delete(id) {
     await delay(200);
     const index = projects.findIndex(p => p.Id === parseInt(id));
