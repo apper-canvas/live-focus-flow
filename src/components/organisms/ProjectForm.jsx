@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { userService } from "@/services/api/userService";
 import ApperIcon from "@/components/ApperIcon";
 import Button from "@/components/atoms/Button";
 import Input from "@/components/atoms/Input";
 import Textarea from "@/components/atoms/Textarea";
+import SearchableSelect from "@/components/atoms/SearchableSelect";
+import Loading from "@/components/ui/Loading";
+import projectsData from "@/services/mockData/projects.json";
+import tasksData from "@/services/mockData/tasks.json";
 
 const PROJECT_STATUSES = [
   { value: 'planning', label: 'Planning', icon: 'Calendar' },
   { value: 'active', label: 'Active', icon: 'Play' },
   { value: 'completed', label: 'Completed', icon: 'CheckCircle' }
-]
+];
 
 export default function ProjectForm({ project, onSubmit, onClose }) {
 const [formData, setFormData] = useState({
@@ -18,9 +23,11 @@ const [formData, setFormData] = useState({
     status: 'planning',
     milestone: '',
     assignee: ''
-  })
-  const [loading, setLoading] = useState(false)
-  const [errors, setErrors] = useState({})
+  });
+  const [users, setUsers] = useState([]);
+  const [usersLoading, setUsersLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   // Populate form when editing
 useEffect(() => {
@@ -33,15 +40,41 @@ useEffect(() => {
         assignee: project.assignee || ''
       })
     }
-  }, [project])
+    
+    // Load users when form opens
+    const loadUsers = async () => {
+      try {
+        setUsersLoading(true);
+        const usersData = await userService.getAll();
+        setUsers(usersData);
+      } catch (error) {
+        console.error("Error loading users:", error);
+      } finally {
+        setUsersLoading(false);
+      }
+};
+
+    loadUsers();
+  }, [project]);
 
   // Handle input changes
-  const handleChange = (field, value) => {
+const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }))
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }))
     }
   }
+
+  // Prepare user options for SearchableSelect
+  const userOptions = [
+    { value: "", label: "No Assignee", icon: "UserX" },
+    ...users.map(user => ({
+      value: user.name,
+      label: user.name,
+      subtitle: user.role,
+      icon: "User"
+    }))
+  ];
 
   // Form validation
 const validateForm = () => {
@@ -63,10 +96,9 @@ const validateForm = () => {
       newErrors.milestone = 'Milestone must be less than 200 characters'
     }
 
-    if (formData.assignee.trim().length > 0 && formData.assignee.trim().length < 3) {
-      newErrors.assignee = 'Assignee name must be at least 3 characters'
-    } else if (formData.assignee.trim().length > 50) {
-      newErrors.assignee = 'Assignee name must be less than 50 characters'
+    // Assignee validation - now optional since it's a lookup field
+    if (formData.assignee && formData.assignee.trim().length < 3) {
+      newErrors.assignee = 'Please select a valid assignee'
     }
 
     setErrors(newErrors)
@@ -74,7 +106,7 @@ const validateForm = () => {
   }
 
   // Handle form submission
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault()
     
     if (!validateForm()) {
@@ -84,11 +116,11 @@ const validateForm = () => {
     setLoading(true)
     try {
       await onSubmit({
-...formData,
+        ...formData,
         name: formData.name.trim(),
         description: formData.description.trim(),
         milestone: formData.milestone.trim(),
-        assignee: formData.assignee.trim()
+        assignee: formData.assignee ? formData.assignee.trim() : ""
       })
     } catch (error) {
       // Error handling is done in parent component
@@ -161,13 +193,12 @@ const validateForm = () => {
                 </Button>
             </div>
             {/* Scrollable Form Content */}
-            <div className="flex-1 overflow-y-auto max-h-[70vh]">
+<div className="flex-1 overflow-y-auto max-h-[70vh]">
                 <div className="p-6 pt-4">
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <form id="project-form" onSubmit={handleSubmit} className="space-y-4">
-                            {/* Project Name */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Project Name *
+                    <form id="project-form" onSubmit={handleSubmit} className="space-y-4">
+                        {/* Project Name */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Project Name *
                                                   </label>
                                 <Input
                                     value={formData.name}
@@ -209,19 +240,29 @@ const validateForm = () => {
                                                   </p>
                             </div>
 
-                            {/* Assignee */}
+{/* Assignee */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">Project Assignee</label>
-                                <Input
+                                <SearchableSelect
+                                    options={userOptions}
                                     value={formData.assignee}
-                                    onChange={e => handleChange("assignee", e.target.value)}
-                                    placeholder="Who's responsible for this project?"
+                                    onChange={(value) => handleChange("assignee", value)}
+                                    placeholder="Select who's responsible for this project..."
+                                    searchPlaceholder="Search team members..."
                                     className={errors.assignee ? "border-red-300 focus:border-red-500" : ""}
-                                    maxLength={50} />
+                                    disabled={usersLoading}
+                                    renderOption={(option) => (
+                                        <div className="flex items-center gap-3">
+                                            <ApperIcon name={option.icon} className="h-4 w-4 text-gray-500" />
+                                            <div>
+                                                <div className="font-medium">{option.label}</div>
+                                                {option.subtitle && <div className="text-sm text-gray-500">{option.subtitle}</div>}
+                                            </div>
+                                        </div>
+                                    )}
+                                />
                                 {errors.assignee && <p className="text-red-600 text-sm mt-1">{errors.assignee}</p>}
-                                <p className="text-xs text-gray-500 mt-1">
-                                    {formData.assignee.length}/50 characters
-                                </p>
+                                {usersLoading && <p className="text-xs text-gray-500 mt-1">Loading team members...</p>}
                             </div>
                             {/* Status */}
                             <div>
@@ -241,10 +282,10 @@ const validateForm = () => {
                                             {status.label}
                                         </p>
                                     </button>)}
-                                </div>
+</div>
                             </div>
                         </form>
-                    </form></div>
+                    </div>
             </div>
             {/* Fixed Action Buttons */}
             <div className="p-6 pt-4 border-t border-gray-200/50 shrink-0">

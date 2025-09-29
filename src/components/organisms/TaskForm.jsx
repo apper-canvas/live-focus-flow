@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { projectService } from "@/services/api/projectService";
+import { userService } from "@/services/api/userService";
 import { cn } from "@/utils/cn";
 import ApperIcon from "@/components/ApperIcon";
 import PrioritySelector from "@/components/molecules/PrioritySelector";
@@ -22,29 +23,39 @@ const [formData, setFormData] = useState({
     assignee: initialData?.assignee || "",
     projectId: initialData?.projectId || ""
   });
+  const [users, setUsers] = useState([]);
+  const [usersLoading, setUsersLoading] = useState(false);
   const [projects, setProjects] = useState([]);
   const [projectsLoading, setProjectsLoading] = useState(false);
 
   // Load projects for lookup
-  useEffect(() => {
-    const loadProjects = async () => {
+useEffect(() => {
+    const loadData = async () => {
       try {
         setProjectsLoading(true);
-        const projectsData = await projectService.getAll();
+        setUsersLoading(true);
+        
+        const [projectsData, usersData] = await Promise.all([
+          projectService.getAll(),
+          userService.getAll()
+        ]);
+        
         setProjects(projectsData);
+        setUsers(usersData);
       } catch (error) {
-        console.error("Error loading projects:", error);
+        console.error("Error loading data:", error);
       } finally {
         setProjectsLoading(false);
+        setUsersLoading(false);
       }
     };
 
     if (isOpen) {
-      loadProjects();
+      loadData();
     }
   }, [isOpen]);
 
-  // Prepare project options for SearchableSelect
+// Prepare project options for SearchableSelect
   const projectOptions = [
     { value: "", label: "No Project", icon: "Folder" },
     ...projects.map(project => ({
@@ -54,10 +65,21 @@ const [formData, setFormData] = useState({
     }))
   ];
 
+  // Prepare user options for SearchableSelect
+  const userOptions = [
+    { value: "", label: "No Assignee", icon: "UserX" },
+    ...users.map(user => ({
+      value: user.name,
+      label: user.name,
+      subtitle: user.role,
+      icon: "User"
+    }))
+  ];
+
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const validateForm = () => {
+const validateForm = () => {
     const newErrors = {};
     
     if (!formData.title.trim()) {
@@ -66,19 +88,27 @@ const [formData, setFormData] = useState({
       newErrors.title = "Title must be at least 3 characters long";
     }
 
+    // Assignee validation - now optional since it's a lookup field  
+    if (formData.assignee && formData.assignee.trim().length < 3) {
+      newErrors.assignee = 'Please select a valid assignee';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!validateForm()) return;
 
     setIsSubmitting(true);
     try {
-      await onSubmit?.(formData);
-setFormData({ title: "", description: "", priority: "medium", assignee: "", projectId: "" });
+      await onSubmit?.({
+        ...formData,
+        assignee: formData.assignee ? formData.assignee.trim() : ""
+      });
+      setFormData({ title: "", description: "", priority: "medium", assignee: "", projectId: "" });
       setErrors({});
       onClose?.();
     } catch (error) {
@@ -87,9 +117,8 @@ setFormData({ title: "", description: "", priority: "medium", assignee: "", proj
       setIsSubmitting(false);
     }
   };
-
-  const handleClose = () => {
-    setFormData({ title: "", description: "", priority: "medium" });
+const handleClose = () => {
+    setFormData({ title: "", description: "", priority: "medium", assignee: "", projectId: "" });
     setErrors({});
     onClose?.();
   };
@@ -163,17 +192,30 @@ setFormData({ title: "", description: "", priority: "medium", assignee: "", proj
                 onChange={(priority) => setFormData({ ...formData, priority })}
 />
 
-              {/* Assignee Field */}
+{/* Assignee Field */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Assignee
                 </label>
-                <Input
+                <SearchableSelect
+                  options={userOptions}
                   value={formData.assignee}
-                  onChange={(e) => setFormData(prev => ({ ...prev, assignee: e.target.value }))}
-                  placeholder="Enter assignee name..."
-                  className="w-full"
+                  onChange={(value) => setFormData(prev => ({ ...prev, assignee: value }))}
+                  placeholder="Select task assignee..."
+                  searchPlaceholder="Search team members..."
+                  className={errors.assignee ? "border-red-300 focus:border-red-500" : ""}
+                  disabled={usersLoading}
+                  renderOption={(option) => (
+                    <div className="flex items-center gap-3">
+                      <ApperIcon name={option.icon} className="h-4 w-4 text-gray-500" />
+                      <div>
+                        <div className="font-medium">{option.label}</div>
+                        {option.subtitle && <div className="text-sm text-gray-500">{option.subtitle}</div>}
+                      </div>
+                    </div>
+                  )}
                 />
+                {errors.assignee && <p className="text-red-600 text-sm mt-1">{errors.assignee}</p>}
               </div>
 
               {/* Project Lookup Field */}

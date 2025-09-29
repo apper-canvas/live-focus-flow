@@ -19,6 +19,7 @@ async getAll() {
       return [...projects];
     }
     
+// Filter projects by assignee name (now from lookup)
     const userProjects = projects.filter(project => project.assignee === user);
     return [...userProjects];
   },
@@ -34,7 +35,8 @@ async getById(id) {
 }
     
     // Check if user has access to this project (skip check for owner)
-    const { user, isOwner } = getCurrentUser();
+const { user, isOwner } = getCurrentUser();
+    // Check access using assignee name from lookup
     if (!isOwner && project.assignee !== user) {
       throw new Error(`Access denied: You don't have permission to view this project`);
     }
@@ -44,7 +46,7 @@ async getById(id) {
 // Create new project
 async create(projectData) {
     await delay(300);
-    const currentUser = getCurrentUser();
+    const { user } = getCurrentUser();
     const maxId = projects.reduce((max, p) => Math.max(max, p.Id), 0);
     
     const newProject = {
@@ -53,7 +55,7 @@ async create(projectData) {
       description: projectData.description || "",
       status: projectData.status || "planning",
       milestone: projectData.milestone || "",
-      assignee: projectData.assignee || currentUser // Ensure assignee is set
+      assignee: projectData.assignee || user // Use lookup value or current user as fallback
     };
 
     projects.push(newProject);
@@ -72,6 +74,7 @@ async update(id, updates) {
 
 // Check if user has access to this project (skip check for owner)
     const { user, isOwner } = getCurrentUser();
+    // Check access using assignee name from lookup
     if (!isOwner && projects[index].assignee !== user) {
       throw new Error(`Access denied: You don't have permission to modify this project`);
     }
@@ -94,7 +97,8 @@ async delete(id) {
     }
 
 // Check if user has access to this project (skip check for owner)
-    const { user, isOwner } = getCurrentUser();
+const { user, isOwner } = getCurrentUser();
+    // Check access using assignee name from lookup
     if (!isOwner && projects[index].assignee !== user) {
       throw new Error(`Access denied: You don't have permission to delete this project`);
     }

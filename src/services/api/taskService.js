@@ -26,7 +26,7 @@ const newTask = {
       description: taskData.description || "",
       priority: taskData.priority || "medium",
       completed: false,
-      assignee: taskData.assignee || "",
+      assignee: taskData.assignee || "", // Now comes from lookup selection
       projectId: taskData.projectId || null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
